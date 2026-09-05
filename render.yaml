@@ -1,0 +1,55 @@
+databases:
+  - name: veltrex-postgres
+    databaseName: veltrex_db
+    user: veltrex_user
+    plan: starter
+    region: singapore
+
+services:
+  - type: web
+    name: veltrex-backend
+    env: node
+    region: singapore
+    plan: starter
+    buildCommand: cd backend && npm install && npx prisma migrate deploy && npm run build
+    startCommand: cd backend && npm run start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: CLIENT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: veltrex-postgres
+          property: connectionString
+      - key: WEATHER_PROVIDER
+        value: openweather
+      - key: WEATHER_API_KEY
+        sync: false
+      - key: WEATHER_API_BASE_URL
+        value: https://api.openweathermap.org/data/2.5
+      - key: SATELLITE_PROVIDER
+        value: sentinel-hub
+      - key: SATELLITE_CLIENT_ID
+        sync: false
+      - key: SATELLITE_CLIENT_SECRET
+        sync: false
+      - key: SATELLITE_API_BASE_URL
+        value: https://services.sentinel-hub.com/api/v1
+      - key: MEDIA_STORAGE_PROVIDER
+        value: s3
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_URL_EXPIRATION_SEC
+        value: 3600

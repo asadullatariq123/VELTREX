@@ -228,6 +228,59 @@ npm run test:api
 
 ---
 
-## 9. Disclaimer & Notice
+## 9. PRODUCTION DEPLOYMENT (Render + Vercel + PostgreSQL/PostGIS)
+
+Follow these step-by-step instructions to deploy VELTREX to production cloud platforms:
+
+### 1. Provision Database (PostgreSQL + PostGIS)
+- Provision a managed PostgreSQL instance with PostGIS extension enabled (e.g. Neon, Render PostgreSQL, Supabase, or AWS RDS).
+
+### 2. Deploy Backend Web Service (Render)
+1. Create a new **Web Service** on [Render](https://render.com) and link your GitHub repository.
+2. Set **Root Directory**: `backend` (or leave empty if using `render.yaml`).
+3. Set **Build Command**: `cd backend && npm install && npm run build`
+4. Set **Start Command**: `cd backend && npm run start`
+5. Configure Environment Variables on Render dashboard:
+   - `PORT`: `10000`
+   - `NODE_ENV`: `production`
+   - `CLIENT_URL`: `https://<your-vercel-app>.vercel.app`
+   - `JWT_SECRET`: `<generate-secure-random-key>`
+   - `DATABASE_URL`: `postgresql://user:pass@host:5432/veltrex?schema=public`
+   - `WEATHER_PROVIDER`: `openweather`
+   - `WEATHER_API_KEY`: `<your-openweather-api-key>`
+   - `SATELLITE_PROVIDER`: `sentinel-hub`
+   - `SATELLITE_CLIENT_ID`: `<your-sentinel-hub-client-id>`
+   - `SATELLITE_CLIENT_SECRET`: `<your-sentinel-hub-client-secret>`
+   - `MEDIA_STORAGE_PROVIDER`: `s3`
+   - `AWS_REGION`: `us-east-1` (or your AWS bucket region)
+   - `AWS_S3_BUCKET`: `veltrex-field-media` (your S3 bucket name)
+   - `AWS_ACCESS_KEY_ID`: `<your-aws-access-key-id>`
+   - `AWS_SECRET_ACCESS_KEY`: `<your-aws-secret-access-key>`
+   - `AWS_S3_URL_EXPIRATION_SEC`: `3600`
+
+### 3. Run Production Database Migrations
+Deploy Prisma schema migrations against the production database:
+```bash
+cd backend
+npx prisma migrate deploy
+```
+
+### 4. Deploy Frontend SPA (Vercel)
+1. Import repository on [Vercel](https://vercel.com).
+2. Set Framework Preset to **Vite**.
+3. Configure Environment Variables on Vercel dashboard:
+   - `VITE_API_BASE_URL`: `https://<your-render-backend-domain>.onrender.com/api/v1`
+   - `VITE_WS_URL`: `https://<your-render-backend-domain>.onrender.com`
+4. Deploy application. `vercel.json` rewrite rules will handle SPA client-side route reloads automatically.
+
+### 5. Post-Deployment Operational Verification
+- Verify `/api/v1/health` returns `200 OK` with status `ok`.
+- Verify `/api/v1/system/status` reports sub-service statuses (`ONLINE`, `LIVE`/`STALE`).
+- Verify real-time Socket.IO status badge displays `LIVE` in the top header.
+- Verify OpenWeather and Sentinel Hub telemetry feeds without demo fallbacks.
+
+---
+
+## 10. Disclaimer & Notice
 
 > VELTREX prototype prediction models, warning decision rules, and simulation workflows are designed for software engineering validation and disaster management system architecture demonstration. They do not replace official emergency directives issued by the National Disaster Management Authority (NDMA) or State Disaster Management Authorities (SDMA).

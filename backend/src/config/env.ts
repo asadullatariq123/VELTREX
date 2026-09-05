@@ -22,7 +22,12 @@ const envSchema = z.object({
   ALERT_DEDUP_WINDOW_MINUTES: z.union([z.string(), z.number()]).transform((val) => (typeof val === 'number' ? val : parseInt(val, 10))).default(60),
   SIMULATION_DEFAULT_SPEED: z.enum(['SLOW', 'NORMAL', 'FAST']).default('NORMAL'),
   REALTIME_ENABLED: z.union([z.string(), z.boolean()]).transform((val) => String(val) !== 'false').default(true),
-  MEDIA_STORAGE_PROVIDER: z.enum(['LOCAL', 'S3']).default('LOCAL'),
+  MEDIA_STORAGE_PROVIDER: z.string().default('LOCAL'),
+  AWS_REGION: z.string().optional(),
+  AWS_S3_BUCKET: z.string().optional(),
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  AWS_S3_URL_EXPIRATION_SEC: z.union([z.string(), z.number()]).transform((val) => (typeof val === 'number' ? val : parseInt(val, 10))).default(3600),
 });
 
 const parseEnv = () => {
@@ -50,6 +55,11 @@ const parseEnv = () => {
   const satelliteProv = data.SATELLITE_PROVIDER.toLowerCase();
   if ((satelliteProv === 'sentinelhub' || satelliteProv === 'sentinel-hub' || satelliteProv === 'real') && (!data.SATELLITE_CLIENT_ID || !data.SATELLITE_CLIENT_SECRET)) {
     console.warn('⚠️ [ENV VALIDATION] SATELLITE_PROVIDER is set to Sentinel Hub, but SATELLITE_CLIENT_ID / SATELLITE_CLIENT_SECRET credentials are missing.');
+  }
+
+  const mediaProv = data.MEDIA_STORAGE_PROVIDER.toLowerCase();
+  if (mediaProv === 's3' && (!data.AWS_REGION || !data.AWS_S3_BUCKET || !data.AWS_ACCESS_KEY_ID || !data.AWS_SECRET_ACCESS_KEY)) {
+    console.warn('⚠️ [ENV VALIDATION] MEDIA_STORAGE_PROVIDER is set to S3, but AWS S3 credentials (AWS_REGION, AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) are missing in environment.');
   }
 
   return data;

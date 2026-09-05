@@ -11,6 +11,7 @@
     "test:api": "ts-node src/__tests__/apiIntegrationTest.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma db push",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "db:seed": "ts-node prisma/seed.ts"
   },

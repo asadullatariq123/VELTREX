@@ -388,7 +388,7 @@ export class FieldReportService {
       throw new Error(`FILE_TOO_LARGE: File size exceeds ${isVideo ? '50MB' : '15MB'} limit.`);
     }
 
-    const stored = await mediaStorageProvider.storeMedia(fileBuffer, originalFileName, mimeType);
+    const stored = await mediaStorageProvider.storeMedia(fileBuffer, originalFileName, mimeType, report.id);
 
     try {
       const media = await prisma.fieldReportMedia.create({

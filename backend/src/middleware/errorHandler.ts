@@ -15,6 +15,7 @@ export type ErrorCode =
   | 'UNAUTHORIZED'
   | 'FORBIDDEN'
   | 'INVALID_TOKEN'
+  | 'MEDIA_UPLOAD_FAILED'
   | 'INTERNAL_ERROR';
 
 export class AppError extends Error {

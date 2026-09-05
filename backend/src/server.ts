@@ -11,13 +11,14 @@ const httpServer = http.createServer(app);
 // Initialize Socket.IO Real-time Intelligence Server
 realtimeServer.initialize(httpServer);
 
-const server = httpServer.listen(PORT, () => {
+const HOST = process.env.HOST || '0.0.0.0';
+
+const server = httpServer.listen(PORT, HOST, () => {
   console.log(`==================================================`);
   console.log(`⚡ VELTREX Real-Time Backend Engine Online`);
-  console.log(`📍 Port: ${PORT}`);
+  console.log(`📍 Host: ${HOST} | Port: ${PORT}`);
   console.log(`🌐 Environment: ${env.NODE_ENV}`);
-  console.log(`🔗 API Base: http://localhost:${PORT}/api/v1`);
-  console.log(`📡 WebSocket Base: ws://localhost:${PORT}`);
+  console.log(`🔗 API Endpoint: /api/v1/health`);
   console.log(`==================================================`);
 });
 
