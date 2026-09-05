@@ -17,7 +17,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
-        value: postgresql://postgres:Asadulla%40123@db.jilamqqbbuadqdqezzos.supabase.co:5432/postgres
+        value: postgresql://postgres.jilamqqbbuadqdqezzos:Asadulla%40123@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres
       - key: WEATHER_PROVIDER
         value: openweather
       - key: WEATHER_API_KEY

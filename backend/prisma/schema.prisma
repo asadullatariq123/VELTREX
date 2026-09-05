@@ -1,5 +1,3 @@
-// Prisma Schema for VELTREX Geospatial Landslide Intelligence Backend — Step 2
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,9 +7,354 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==========================================
-// ENUMS
-// ==========================================
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  passwordHash String
+  role         UserRole      @default(COMMUNITY_USER)
+  language     String        @default("en")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  fieldReports FieldReport[]
+
+  @@index([role])
+}
+
+model NerState {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  code      String     @unique
+  createdAt DateTime   @default(now())
+  locations Location[]
+}
+
+model Location {
+  id                    String                     @id @default(uuid())
+  name                  String
+  stateId               String
+  district              String
+  latitude              Float
+  longitude             Float
+  elevation             Float                      @default(0.0)
+  location              Unsupported("geometry")?
+  createdAt             DateTime                   @default(now())
+  updatedAt             DateTime                   @updatedAt
+  alerts                Alert[]
+  fieldReports          FieldReport[]
+  historicalEvents      HistoricalLandslideEvent[]
+  incidents             Incident[]
+  infrastructure        Infrastructure[]
+  state                 NerState                   @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  predictions           Prediction[]
+  riskZones             RiskZone[]
+  satelliteObservations SatelliteObservation[]
+  sensors               Sensor[]
+  weatherReadings       WeatherReading[]
+
+  @@index([stateId])
+  @@index([district])
+}
+
+model RiskZone {
+  id                       String                   @id @default(uuid())
+  locationId               String
+  riskScore                Int
+  riskLevel                RiskLevel
+  confidence               Float
+  rainfallContribution     Float
+  soilMoistureContribution Float
+  slopeContribution        Float
+  terrainContribution      Float
+  historicalContribution   Float
+  displacementContribution Float
+  status                   String                   @default("ACTIVE")
+  geometry                 Unsupported("geometry")?
+  createdAt                DateTime                 @default(now())
+  updatedAt                DateTime                 @updatedAt
+  location                 Location                 @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([riskLevel])
+  @@index([riskScore])
+  @@index([status])
+}
+
+model Sensor {
+  id           String                   @id @default(uuid())
+  stationCode  String                   @unique
+  stationName  String
+  locationId   String
+  sensorType   SensorType
+  status       SensorStatus             @default(ONLINE)
+  unit         String
+  currentValue Float                    @default(0.0)
+  batteryLevel Float                    @default(100.0)
+  lastUpdated  DateTime                 @default(now())
+  locationGeom Unsupported("geometry")?
+  createdAt    DateTime                 @default(now())
+  location     Location                 @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  readings     SensorReading[]
+
+  @@index([locationId])
+  @@index([sensorType])
+  @@index([status])
+}
+
+model SensorReading {
+  id        String   @id @default(uuid())
+  sensorId  String
+  value     Float
+  unit      String
+  timestamp DateTime @default(now())
+  sensor    Sensor   @relation(fields: [sensorId], references: [id], onDelete: Cascade)
+
+  @@index([sensorId, timestamp])
+  @@index([timestamp])
+}
+
+model WeatherReading {
+  id               String   @id @default(uuid())
+  locationId       String
+  rainfall         Float
+  humidity         Float
+  temperature      Float
+  windSpeed        Float
+  soilMoisture     Float
+  forecastRainfall Float
+  timestamp        DateTime @default(now())
+  location         Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId, timestamp])
+  @@index([timestamp])
+}
+
+model SatelliteObservation {
+  id              String           @id @default(uuid())
+  locationId      String
+  provider        String           @default("DEMO")
+  observationType SatelliteObsType
+  displacement    Float
+  terrainChange   Boolean          @default(false)
+  imageUrl        String?
+  observationTime DateTime         @default(now())
+  createdAt       DateTime         @default(now())
+  location        Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([observationType])
+}
+
+model Incident {
+  id           String                   @id @default(uuid())
+  title        String
+  description  String
+  locationId   String
+  latitude     Float
+  longitude    Float
+  locationGeom Unsupported("geometry")?
+  severity     Severity                 @default(HIGH)
+  status       IncidentStatus           @default(OPEN)
+  assignedTeam String?
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  location     Location                 @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([severity])
+  @@index([status])
+}
+
+model FieldReport {
+  id                   String                   @id @default(uuid())
+  clientReportId       String                   @unique
+  userId               String?
+  locationId           String?
+  latitude             Float
+  longitude            Float
+  locationGeom         Unsupported("geometry")?
+  accuracy             Float                    @default(10.0)
+  description          String
+  verificationStatus   VerificationStatus       @default(PENDING)
+  aiConfidence         Float?                   @default(0.0)
+  offlineCreated       Boolean                  @default(false)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  aiVerificationStatus AiVerificationStatus     @default(NOT_PROCESSED)
+  observedAt           DateTime                 @default(now())
+  reportType           FieldReportType          @default(LANDSLIDE)
+  reporterName         String?
+  reporterRole         UserRole?
+  severity             Severity                 @default(MODERATE)
+  source               String                   @default("FIELD_REPORT")
+  status               FieldReportStatus        @default(RECEIVED)
+  syncStatus           SyncStatus               @default(SYNCED)
+  location             Location?                @relation(fields: [locationId], references: [id])
+  user                 User?                    @relation(fields: [userId], references: [id])
+  media                FieldReportMedia[]
+
+  @@index([locationId])
+  @@index([observedAt])
+  @@index([severity])
+  @@index([status])
+  @@index([verificationStatus])
+  @@index([clientReportId])
+}
+
+model FieldReportMedia {
+  id          String      @id @default(uuid())
+  reportId    String
+  mediaType   MediaType
+  fileName    String
+  mimeType    String
+  fileSize    Int
+  storagePath String?
+  publicUrl   String?
+  checksum    String?
+  uploadedAt  DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  report      FieldReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([mediaType])
+}
+
+model Alert {
+  id                     String           @id @default(uuid())
+  title                  String
+  message                String
+  locationId             String?
+  status                 AlertStatus      @default(ACTIVE)
+  createdAt              DateTime         @default(now())
+  acknowledgedAt         DateTime?
+  affectedInfrastructure Json?
+  affectedPopulation     Int?
+  alertCode              String           @unique
+  alertLevel             AlertLevel       @default(ADVISORY)
+  confidence             Float?
+  expiresAt              DateTime?
+  generatedAt            DateTime         @default(now())
+  incidentId             String?
+  predictionProbability  Float?
+  priority               AlertPriority    @default(P4)
+  recommendedAction      String
+  resolvedAt             DateTime?
+  riskScore              Float?
+  riskZoneId             String?
+  source                 AlertSource      @default(SYSTEM)
+  triggerType            AlertTriggerType @default(RISK_THRESHOLD)
+  updatedAt              DateTime         @updatedAt
+  location               Location?        @relation(fields: [locationId], references: [id])
+
+  @@index([locationId])
+  @@index([alertLevel])
+  @@index([priority])
+  @@index([status])
+  @@index([generatedAt])
+  @@index([expiresAt])
+}
+
+model HistoricalLandslideEvent {
+  id                 String                   @id @default(uuid())
+  locationId         String?
+  latitude           Float
+  longitude          Float
+  locationGeom       Unsupported("geometry")?
+  eventDate          DateTime
+  severity           Severity                 @default(HIGH)
+  rainfall24h        Float?
+  rainfall72h        Float?
+  soilMoisture       Float?
+  slope              Float?
+  terrainChange      Boolean?                 @default(false)
+  displacement       Float?
+  historicalActivity Float?
+  source             String                   @default("DEMO")
+  description        String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  location           Location?                @relation(fields: [locationId], references: [id])
+
+  @@index([locationId])
+  @@index([eventDate])
+  @@index([severity])
+  @@index([source])
+}
+
+model Prediction {
+  id                String    @id @default(uuid())
+  locationId        String
+  riskScore         Int
+  riskLevel         RiskLevel
+  confidence        Float     @default(0.0)
+  explanation       String
+  createdAt         DateTime  @default(now())
+  baselineRiskScore Int       @default(0)
+  expiresAt         DateTime?
+  featureImportance Json?
+  features          Json?
+  generatedAt       DateTime  @default(now())
+  horizon           String    @default("24H")
+  mlProbability     Float     @default(0.0)
+  modelName         String    @default("VELTREX-DEMO-V1")
+  modelVersion      String    @default("1.0.0")
+  predictionSource  String    @default("DEMO_MODEL")
+  probability       Float     @default(0.0)
+  location          Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([horizon])
+  @@index([riskLevel])
+  @@index([riskScore])
+  @@index([generatedAt])
+}
+
+model Infrastructure {
+  id           String                   @id @default(uuid())
+  name         String
+  type         InfraType
+  locationId   String
+  latitude     Float
+  longitude    Float
+  locationGeom Unsupported("geometry")?
+  status       String                   @default("OPERATIONAL")
+  createdAt    DateTime                 @default(now())
+  location     Location                 @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@index([locationId])
+  @@index([type])
+}
+
+model SimulationRun {
+  id                 String    @id @default(uuid())
+  scenarioId         String
+  locationId         String?
+  status             String    @default("COMPLETED")
+  startedAt          DateTime  @default(now())
+  completedAt        DateTime?
+  initialRisk        Int       @default(42)
+  finalRisk          Int       @default(78)
+  initialProbability Float     @default(0.58)
+  finalProbability   Float     @default(0.81)
+  finalAlertLevel    String    @default("WARNING")
+  finalPriority      String    @default("P1")
+  source             String    @default("DEMO")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([scenarioId])
+  @@index([locationId])
+  @@index([status])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
 
 enum UserRole {
   ADMIN
@@ -90,14 +433,14 @@ enum AlertChannel {
 
 enum AlertStatus {
   DRAFT
+  QUEUED
+  SENT
+  FAILED
   ACTIVE
   ACKNOWLEDGED
   RESOLVED
   EXPIRED
   CANCELLED
-  QUEUED
-  SENT
-  FAILED
 }
 
 enum InfraType {
@@ -107,168 +450,6 @@ enum InfraType {
   SCHOOL
   EMERGENCY_CENTER
   CRITICAL_FACILITY
-}
-
-// ==========================================
-// MODELS
-// ==========================================
-
-model User {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  passwordHash String
-  role         UserRole      @default(COMMUNITY_USER)
-  language     String        @default("en")
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  fieldReports FieldReport[]
-
-  @@index([role])
-}
-
-model NerState {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  code      String     @unique
-  createdAt DateTime   @default(now())
-  locations Location[]
-}
-
-model Location {
-  id                    String                 @id @default(uuid())
-  name                  String
-  stateId               String
-  state                 NerState               @relation(fields: [stateId], references: [id], onDelete: Cascade)
-  district              String
-  latitude              Float
-  longitude             Float
-  elevation             Float                  @default(0.0)
-  location              Unsupported("geometry(Point, 4326)")?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  riskZones             RiskZone[]
-  sensors               Sensor[]
-  weatherReadings       WeatherReading[]
-  satelliteObservations SatelliteObservation[]
-  incidents             Incident[]
-  fieldReports          FieldReport[]
-  alerts                Alert[]
-  predictions           Prediction[]
-  historicalEvents      HistoricalLandslideEvent[]
-  infrastructure        Infrastructure[]
-
-  @@index([stateId])
-  @@index([district])
-}
-
-model RiskZone {
-  id                       String   @id @default(uuid())
-  locationId               String
-  location                 Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  riskScore                Int
-  riskLevel                RiskLevel
-  confidence               Float
-  rainfallContribution     Float
-  soilMoistureContribution Float
-  slopeContribution        Float
-  terrainContribution      Float
-  historicalContribution   Float
-  displacementContribution Float
-  status                   String   @default("ACTIVE")
-  geometry                 Unsupported("geometry(Point, 4326)")?
-  createdAt                DateTime @default(now())
-  updatedAt                DateTime @updatedAt
-
-  @@index([locationId])
-  @@index([riskLevel])
-  @@index([riskScore])
-  @@index([status])
-}
-
-model Sensor {
-  id           String          @id @default(uuid())
-  stationCode  String          @unique
-  stationName  String
-  locationId   String
-  location     Location        @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  sensorType   SensorType
-  status       SensorStatus    @default(ONLINE)
-  unit         String
-  currentValue Float           @default(0.0)
-  batteryLevel Float           @default(100.0)
-  lastUpdated  DateTime        @default(now())
-  locationGeom Unsupported("geometry(Point, 4326)")?
-  createdAt    DateTime        @default(now())
-  readings     SensorReading[]
-
-  @@index([locationId])
-  @@index([sensorType])
-  @@index([status])
-}
-
-model SensorReading {
-  id        String   @id @default(uuid())
-  sensorId  String
-  sensor    Sensor   @relation(fields: [sensorId], references: [id], onDelete: Cascade)
-  value     Float
-  unit      String
-  timestamp DateTime @default(now())
-
-  @@index([sensorId, timestamp])
-  @@index([timestamp])
-}
-
-model WeatherReading {
-  id               String   @id @default(uuid())
-  locationId       String
-  location         Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  rainfall         Float
-  humidity         Float
-  temperature      Float
-  windSpeed        Float
-  soilMoisture     Float
-  forecastRainfall Float
-  timestamp        DateTime @default(now())
-
-  @@index([locationId, timestamp])
-  @@index([timestamp])
-}
-
-model SatelliteObservation {
-  id              String           @id @default(uuid())
-  locationId      String
-  location        Location         @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  provider        String           @default("DEMO")
-  observationType SatelliteObsType
-  displacement    Float
-  terrainChange   Boolean          @default(false)
-  imageUrl        String?
-  observationTime DateTime         @default(now())
-  createdAt       DateTime         @default(now())
-
-  @@index([locationId])
-  @@index([observationType])
-}
-
-model Incident {
-  id           String         @id @default(uuid())
-  title        String
-  description  String
-  locationId   String
-  location     Location       @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  latitude     Float
-  longitude    Float
-  locationGeom Unsupported("geometry(Point, 4326)")?
-  severity     Severity       @default(HIGH)
-  status       IncidentStatus @default(OPEN)
-  assignedTeam String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-
-  @@index([locationId])
-  @@index([severity])
-  @@index([status])
 }
 
 enum FieldReportType {
@@ -310,60 +491,6 @@ enum MediaType {
   VIDEO
 }
 
-model FieldReport {
-  id                   String               @id @default(uuid())
-  clientReportId       String               @unique
-  userId               String?
-  user                 User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
-  locationId           String?
-  location             Location?            @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  latitude             Float
-  longitude            Float
-  locationGeom         Unsupported("geometry(Point, 4326)")?
-  accuracy             Float                @default(10.0)
-  reporterName         String?
-  reporterRole         UserRole?
-  reportType           FieldReportType      @default(LANDSLIDE)
-  severity             Severity             @default(MODERATE)
-  description          String
-  observedAt           DateTime             @default(now())
-  status               FieldReportStatus    @default(RECEIVED)
-  verificationStatus   VerificationStatus   @default(PENDING)
-  aiVerificationStatus AiVerificationStatus @default(NOT_PROCESSED)
-  aiConfidence         Float?               @default(0.0)
-  source               String               @default("FIELD_REPORT")
-  syncStatus           SyncStatus           @default(SYNCED)
-  offlineCreated       Boolean              @default(false)
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
-  media                FieldReportMedia[]
-
-  @@index([locationId])
-  @@index([observedAt])
-  @@index([severity])
-  @@index([status])
-  @@index([verificationStatus])
-  @@index([clientReportId])
-}
-
-model FieldReportMedia {
-  id          String      @id @default(uuid())
-  reportId    String
-  report      FieldReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  mediaType   MediaType
-  fileName    String
-  mimeType    String
-  fileSize    Int
-  storagePath String?
-  publicUrl   String?
-  checksum    String?
-  uploadedAt  DateTime    @default(now())
-  createdAt   DateTime    @default(now())
-
-  @@index([reportId])
-  @@index([mediaType])
-}
-
 enum AlertLevel {
   ADVISORY
   WATCH
@@ -378,7 +505,6 @@ enum AlertPriority {
   P1
 }
 
-
 enum AlertTriggerType {
   RISK_THRESHOLD
   ML_PREDICTION
@@ -391,132 +517,4 @@ enum AlertSource {
   DEMO
   SYSTEM
   AUTHORITY
-}
-
-model Alert {
-  id                     String           @id @default(uuid())
-  alertCode              String           @unique
-  locationId             String?
-  location               Location?        @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  riskZoneId             String?
-  incidentId             String?
-  alertLevel             AlertLevel       @default(ADVISORY)
-  priority               AlertPriority    @default(P4)
-  status                 AlertStatus      @default(ACTIVE)
-  triggerType            AlertTriggerType @default(RISK_THRESHOLD)
-  riskScore              Float?
-  predictionProbability  Float?
-  confidence             Float?
-  affectedPopulation     Int?
-  affectedInfrastructure Json?
-  title                  String
-  message                String           @db.Text
-  recommendedAction      String           @db.Text
-  source                 AlertSource      @default(SYSTEM)
-  generatedAt            DateTime         @default(now())
-  acknowledgedAt         DateTime?
-  resolvedAt             DateTime?
-  expiresAt              DateTime?
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-
-  @@index([locationId])
-  @@index([alertLevel])
-  @@index([priority])
-  @@index([status])
-  @@index([generatedAt])
-  @@index([expiresAt])
-}
-
-model HistoricalLandslideEvent {
-  id                 String    @id @default(uuid())
-  locationId         String?
-  location           Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  latitude           Float
-  longitude          Float
-  locationGeom       Unsupported("geometry(Point, 4326)")?
-  eventDate          DateTime
-  severity           Severity  @default(HIGH)
-  rainfall24h        Float?
-  rainfall72h        Float?
-  soilMoisture       Float?
-  slope              Float?
-  terrainChange      Boolean?  @default(false)
-  displacement       Float?
-  historicalActivity Float?
-  source             String    @default("DEMO")
-  description        String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-
-  @@index([locationId])
-  @@index([eventDate])
-  @@index([severity])
-  @@index([source])
-}
-
-model Prediction {
-  id                String    @id @default(uuid())
-  locationId        String
-  location          Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  horizon           String    @default("24H")
-  probability       Float     @default(0.0)
-  riskScore         Int
-  riskLevel         RiskLevel
-  confidence        Float     @default(0.0)
-  baselineRiskScore Int       @default(0)
-  mlProbability     Float     @default(0.0)
-  modelName         String    @default("VELTREX-DEMO-V1")
-  modelVersion      String    @default("1.0.0")
-  predictionSource  String    @default("DEMO_MODEL")
-  features          Json?
-  featureImportance Json?
-  explanation       String
-  generatedAt       DateTime  @default(now())
-  expiresAt         DateTime?
-  createdAt         DateTime  @default(now())
-
-  @@index([locationId])
-  @@index([horizon])
-  @@index([riskLevel])
-  @@index([riskScore])
-  @@index([generatedAt])
-}
-
-model Infrastructure {
-  id           String   @id @default(uuid())
-  name         String
-  type         InfraType
-  locationId   String
-  location     Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  latitude     Float
-  longitude    Float
-  locationGeom Unsupported("geometry(Point, 4326)")?
-  status       String   @default("OPERATIONAL")
-  createdAt    DateTime @default(now())
-
-  @@index([locationId])
-  @@index([type])
-}
-
-model SimulationRun {
-  id                 String    @id @default(uuid())
-  scenarioId         String
-  locationId         String?
-  status             String    @default("COMPLETED")
-  startedAt          DateTime  @default(now())
-  completedAt        DateTime?
-  initialRisk        Int       @default(42)
-  finalRisk          Int       @default(78)
-  initialProbability Float     @default(0.58)
-  finalProbability   Float     @default(0.81)
-  finalAlertLevel    String    @default("WARNING")
-  finalPriority      String    @default("P1")
-  source             String    @default("DEMO")
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-
-  @@index([scenarioId])
-  @@index([locationId])
-  @@index([status])
 }
