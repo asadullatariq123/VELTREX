@@ -1,4 +1,21 @@
-import { PrismaClient, UserRole, RiskLevel, SensorType, SensorStatus, SatelliteObsType, Severity, IncidentStatus, VerificationStatus, AlertLanguage, AlertChannel, AlertStatus, InfraType } from '@prisma/client';
+import {
+  PrismaClient,
+  UserRole,
+  RiskLevel,
+  SensorType,
+  SensorStatus,
+  SatelliteObsType,
+  Severity,
+  IncidentStatus,
+  VerificationStatus,
+  AlertStatus,
+  InfraType,
+  FieldReportType,
+  FieldReportStatus,
+  AiVerificationStatus,
+  SyncStatus,
+  MediaType,
+} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
