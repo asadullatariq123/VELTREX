@@ -48,8 +48,8 @@ const allowedOrigins = new Set([
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like server-to-server or curl) or in allowed origins list
-      if (!origin || allowedOrigins.has(origin) || origin.startsWith('http://localhost:')) {
+      // Allow requests with no origin (like server-to-server or curl), explicit CLIENT_URL, vercel.app deployments, or localhost
+      if (!origin || origin === env.CLIENT_URL || allowedOrigins.has(origin) || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
         callback(null, true);
       } else if (env.NODE_ENV === 'development') {
         callback(null, true);

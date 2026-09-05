@@ -4,6 +4,7 @@ import { ClientSubscriptionEvent } from './realtimeEvents';
 import { RealtimeRooms } from './realtimeRooms';
 import { RealtimeAuth } from './realtimeAuth';
 import { realtimePublisher } from './realtimePublisher';
+import { env } from '../config/env';
 
 export class RealtimeServer {
   private io: SocketIOServer | null = null;
@@ -11,7 +12,13 @@ export class RealtimeServer {
   public initialize(httpServer: HTTPServer): SocketIOServer {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: '*',
+        origin: (origin, callback) => {
+          if (!origin || origin === env.CLIENT_URL || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
+            callback(null, true);
+          } else {
+            callback(null, true);
+          }
+        },
         methods: ['GET', 'POST'],
         credentials: true
       },

@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { ConnectionStatus, VeltrexRealtimeEvent } from './realtimeEvents';
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_WS_URL || 'http://localhost:5000';
+const SOCKET_SERVER_URL = import.meta.env.VITE_WS_URL || (import.meta.env.PROD ? 'https://veltrex-my45.onrender.com' : 'http://localhost:5000');
 
 type EventListener = (event: VeltrexRealtimeEvent) => void;
 type StatusListener = (status: ConnectionStatus) => void;
