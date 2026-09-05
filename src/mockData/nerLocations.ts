@@ -1,0 +1,373 @@
+import { NerLocation } from '../types';
+
+export const NER_LOCATIONS: NerLocation[] = [
+  {
+    id: 'aizawl-mizoram',
+    name: 'Aizawl Sector 04',
+    state: 'Mizoram',
+    district: 'Aizawl',
+    coordinates: { lat: 23.7271, lng: 92.7176 },
+    riskScore: 87,
+    riskLevel: 'CRITICAL',
+    confidenceScore: 91,
+    expectedRiskWindow: '6–12 Hours',
+    rainfallMm: 82,
+    soilMoisturePct: 91,
+    slopeDeg: 84,
+    historicalActivityPct: 71,
+    terrainInstabilityPct: 79,
+    xaiContributors: [
+      { factor: 'Heavy Rainfall', weightPct: 24, icon: '🌧', description: 'Accumulated 82mm torrential precipitation over 6 hours' },
+      { factor: 'High Soil Saturation', weightPct: 21, icon: '💧', description: 'Volumetric water content exceeds critical 91% shear limit' },
+      { factor: 'Steep Slope Gradient', weightPct: 18, icon: '⛰', description: 'Slope inclination > 38 degrees along NH-54 bypass' },
+      { factor: 'Historical Landslide Activity', weightPct: 14, icon: '📜', description: '3 major slope failures recorded in 2023 monsoon season' },
+      { factor: 'Recent Terrain Displacement', weightPct: 11, icon: '🛰', description: 'Sentinel-2 radar detected 2.4 ha surface displacement' },
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 42, rainfall: 12 },
+      { time: '14:00', score: 51, rainfall: 28 },
+      { time: '16:00', score: 63, rainfall: 46 },
+      { time: '18:00', score: 76, rainfall: 65 },
+      { time: 'NOW', score: 87, rainfall: 82 },
+    ],
+    impact: {
+      roadsCount: 2,
+      villagesCount: 1,
+      bridgesCount: 1,
+      peopleAffected: 1240,
+    },
+    recommendedActions: [
+      { id: 'act-1', action: 'Deploy SDRF inspection team to NH-54 sector', priority: 'P1' },
+      { id: 'act-2', action: 'Initiate temporary traffic diversion on Aizawl-Lunglei Highway', priority: 'P1' },
+      { id: 'act-3', action: 'Broadcast high-priority SMS warning to 1,240 registered residents', priority: 'P1' },
+      { id: 'act-4', action: 'Pre-position earth-moving heavy equipment at Bawngkawn junction', priority: 'P2' },
+    ],
+    satelliteChange: {
+      areaHectares: 2.4,
+      confidencePct: 88,
+      periodDays: 7,
+      sector: 'Aizawl Sector 04 Ridge',
+      beforeImgUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
+      nowImgUrl: 'https://images.unsplash.com/photo-1511497584788-8767611136f6?auto=format&fit=crop&w=600&q=80',
+    }
+  },
+  {
+    id: 'shillong-meghalaya',
+    name: 'East Khasi Hills (Shillong Peak Corridor)',
+    state: 'Meghalaya',
+    district: 'East Khasi Hills',
+    coordinates: { lat: 25.5788, lng: 91.8933 },
+    riskScore: 78,
+    riskLevel: 'HIGH',
+    confidenceScore: 88,
+    expectedRiskWindow: '12–18 Hours',
+    rainfallMm: 74,
+    soilMoisturePct: 85,
+    slopeDeg: 78,
+    historicalActivityPct: 68,
+    terrainInstabilityPct: 72,
+    xaiContributors: [
+      { factor: 'Continuous Monsoon Downpour', weightPct: 26, icon: '🌧', description: '74mm rainfall over high-altitude catchments' },
+      { factor: 'Unconsolidated Soil Layer', weightPct: 22, icon: '💧', description: 'High pore-water pressure along Shillong-Guwahati corridor' },
+      { factor: 'Road Cut Excavation Instability', weightPct: 17, icon: '⛰', description: 'Widening projects increased hillside fragility' },
+      { factor: 'Drainage Blockage', weightPct: 15, icon: '🌊', description: 'Blocked culverts accelerating surface runoff scour' },
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 38, rainfall: 10 },
+      { time: '14:00', score: 46, rainfall: 22 },
+      { time: '16:00', score: 58, rainfall: 39 },
+      { time: '18:00', score: 69, rainfall: 57 },
+      { time: 'NOW', score: 78, rainfall: 74 },
+    ],
+    impact: {
+      roadsCount: 3,
+      villagesCount: 2,
+      bridgesCount: 0,
+      peopleAffected: 2150,
+    },
+    recommendedActions: [
+      { id: 'act-sh-1', action: 'Issue advisory for Shillong Bypass heavy vehicles', priority: 'P1' },
+      { id: 'act-sh-2', action: 'Clear drainage obstructions near Upper Shillong slope', priority: 'P2' },
+      { id: 'act-sh-3', action: 'Alert District Disaster Management Authority (DDMA) Khasi Hills', priority: 'P2' },
+    ],
+    satelliteChange: {
+      areaHectares: 1.8,
+      confidencePct: 84,
+      periodDays: 5,
+      sector: 'Upper Shillong Pass',
+      beforeImgUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
+      nowImgUrl: 'https://images.unsplash.com/photo-1511497584788-8767611136f6?auto=format&fit=crop&w=600&q=80',
+    }
+  },
+  {
+    id: 'gangtok-sikkim',
+    name: 'Gangtok – NH10 Highway Zone',
+    state: 'Sikkim',
+    district: 'East Sikkim',
+    coordinates: { lat: 27.3389, lng: 88.6065 },
+    riskScore: 82,
+    riskLevel: 'CRITICAL',
+    confidenceScore: 92,
+    expectedRiskWindow: '4–8 Hours',
+    rainfallMm: 95,
+    soilMoisturePct: 93,
+    slopeDeg: 88,
+    historicalActivityPct: 84,
+    terrainInstabilityPct: 86,
+    xaiContributors: [
+      { factor: 'Extreme Cloudburst Surge', weightPct: 30, icon: '🌧', description: '95mm intense rain in Teesta basin catchment' },
+      { factor: 'Active Seismic Faulting Line', weightPct: 20, icon: '🌋', description: 'Tectonic fragility along Himalayan thrust belt' },
+      { factor: 'Pore Water Saturated Soil', weightPct: 18, icon: '💧', description: 'Maximum saturation causing fluid mudflow risk' },
+      { factor: 'Critical Road Arterial NH-10', weightPct: 14, icon: '🛣', description: 'Single life-line corridor to Siliguri susceptible to cutoff' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 45, rainfall: 15 },
+      { time: '14:00', score: 56, rainfall: 35 },
+      { time: '16:00', score: 68, rainfall: 60 },
+      { time: '18:00', score: 79, rainfall: 80 },
+      { time: 'NOW', score: 82, rainfall: 95 },
+    ],
+    impact: {
+      roadsCount: 1,
+      villagesCount: 3,
+      bridgesCount: 2,
+      peopleAffected: 3400,
+    },
+    recommendedActions: [
+      { id: 'act-gk-1', action: 'Close NH-10 at Sevoke-Rangpo stretch for civilian traffic', priority: 'P1' },
+      { id: 'act-gk-2', action: 'Mobilize Army & BRO disaster relief columns at Singtam', priority: 'P1' },
+      { id: 'act-gk-3', action: 'Sound siren warning for Teesta riverbank settlements', priority: 'P1' }
+    ],
+    satelliteChange: {
+      areaHectares: 3.1,
+      confidencePct: 91,
+      periodDays: 3,
+      sector: 'Rangpo Slopes',
+      beforeImgUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
+      nowImgUrl: 'https://images.unsplash.com/photo-1511497584788-8767611136f6?auto=format&fit=crop&w=600&q=80',
+    }
+  },
+  {
+    id: 'kohima-nagaland',
+    name: 'Kohima Town & Phesama Ridge',
+    state: 'Nagaland',
+    district: 'Kohima',
+    coordinates: { lat: 25.6751, lng: 94.1086 },
+    riskScore: 68,
+    riskLevel: 'HIGH',
+    confidenceScore: 86,
+    expectedRiskWindow: '18–24 Hours',
+    rainfallMm: 58,
+    soilMoisturePct: 76,
+    slopeDeg: 72,
+    historicalActivityPct: 62,
+    terrainInstabilityPct: 65,
+    xaiContributors: [
+      { factor: 'Moderate Rainfall Surge', weightPct: 22, icon: '🌧', description: '58mm steady rainfall over 12 hours' },
+      { factor: 'Phesama Creep Zone', weightPct: 25, icon: '⛰', description: 'Chronic slow slope creep activated by wet season' },
+      { factor: 'Unregulated Urban Construction', weightPct: 19, icon: '🏘', description: 'Heavy structural loading on unstable terrace slopes' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 32, rainfall: 8 },
+      { time: '14:00', score: 40, rainfall: 18 },
+      { time: '16:00', score: 51, rainfall: 32 },
+      { time: '18:00', score: 60, rainfall: 45 },
+      { time: 'NOW', score: 68, rainfall: 58 },
+    ],
+    impact: {
+      roadsCount: 2,
+      villagesCount: 1,
+      bridgesCount: 0,
+      peopleAffected: 890,
+    },
+    recommendedActions: [
+      { id: 'act-koh-1', action: 'Inspect Phesama landslide bypass road', priority: 'P2' },
+      { id: 'act-koh-2', action: 'Deploy tilt-sensor monitoring unit at Municipal Ward 12', priority: 'P3' }
+    ],
+    satelliteChange: {
+      areaHectares: 1.2,
+      confidencePct: 79,
+      periodDays: 7,
+      sector: 'Phesama Bypass',
+      beforeImgUrl: '',
+      nowImgUrl: '',
+    }
+  },
+  {
+    id: 'itanagar-arunachal',
+    name: 'Itanagar – Banderdewa Pass',
+    state: 'Arunachal Pradesh',
+    district: 'Papum Pare',
+    coordinates: { lat: 27.0844, lng: 93.6053 },
+    riskScore: 61,
+    riskLevel: 'MODERATE',
+    confidenceScore: 84,
+    expectedRiskWindow: '24+ Hours',
+    rainfallMm: 45,
+    soilMoisturePct: 68,
+    slopeDeg: 65,
+    historicalActivityPct: 50,
+    terrainInstabilityPct: 54,
+    xaiContributors: [
+      { factor: 'Intermittent Heavy Rain', weightPct: 20, icon: '🌧', description: '45mm rainfall over last 8 hours' },
+      { factor: 'Sedimentary Shale Instability', weightPct: 22, icon: '⛰', description: 'Weathered rock matrix along capital road' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 28, rainfall: 5 },
+      { time: '14:00', score: 35, rainfall: 14 },
+      { time: '16:00', score: 44, rainfall: 25 },
+      { time: '18:00', score: 52, rainfall: 36 },
+      { time: 'NOW', score: 61, rainfall: 45 },
+    ],
+    impact: {
+      roadsCount: 1,
+      villagesCount: 1,
+      bridgesCount: 0,
+      peopleAffected: 420,
+    },
+    recommendedActions: [
+      { id: 'act-ita-1', action: 'Maintain continuous rainfall telemetry', priority: 'P3' }
+    ],
+    satelliteChange: {
+      areaHectares: 0.9,
+      confidencePct: 75,
+      periodDays: 7,
+      sector: 'Banderdewa Slope',
+      beforeImgUrl: '',
+      nowImgUrl: '',
+    }
+  },
+  {
+    id: 'imphal-manipur',
+    name: 'Imphal West – Tupul Railway Corridor',
+    state: 'Manipur',
+    district: 'Tamenglong / Imphal West',
+    coordinates: { lat: 24.817, lng: 93.9368 },
+    riskScore: 74,
+    riskLevel: 'HIGH',
+    confidenceScore: 89,
+    expectedRiskWindow: '8–14 Hours',
+    rainfallMm: 68,
+    soilMoisturePct: 83,
+    slopeDeg: 79,
+    historicalActivityPct: 77,
+    terrainInstabilityPct: 76,
+    xaiContributors: [
+      { factor: 'High Soil Saturation', weightPct: 25, icon: '💧', description: 'Water table rise in Tupul valley mudslide zone' },
+      { factor: 'Railway Excavation Cutting', weightPct: 21, icon: '🚂', description: 'Deep mountain cut for Jiribam-Imphal line' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 35, rainfall: 12 },
+      { time: '14:00', score: 45, rainfall: 24 },
+      { time: '16:00', score: 57, rainfall: 41 },
+      { time: '18:00', score: 66, rainfall: 55 },
+      { time: 'NOW', score: 74, rainfall: 68 },
+    ],
+    impact: {
+      roadsCount: 2,
+      villagesCount: 2,
+      bridgesCount: 1,
+      peopleAffected: 1560,
+    },
+    recommendedActions: [
+      { id: 'act-imp-1', action: 'Halt railway construction personnel in Tupul sector', priority: 'P1' },
+      { id: 'act-imp-2', action: 'Deploy emergency monitoring team to NH-37', priority: 'P2' }
+    ],
+    satelliteChange: {
+      areaHectares: 2.1,
+      confidencePct: 87,
+      periodDays: 4,
+      sector: 'Tupul Valley Slope',
+      beforeImgUrl: '',
+      nowImgUrl: '',
+    }
+  },
+  {
+    id: 'guwahati-assam',
+    name: 'Guwahati Hills (Kamrup Metro)',
+    state: 'Assam',
+    district: 'Kamrup Metropolitan',
+    coordinates: { lat: 26.1445, lng: 91.7362 },
+    riskScore: 54,
+    riskLevel: 'MODERATE',
+    confidenceScore: 85,
+    expectedRiskWindow: '24+ Hours',
+    rainfallMm: 42,
+    soilMoisturePct: 62,
+    slopeDeg: 55,
+    historicalActivityPct: 58,
+    terrainInstabilityPct: 50,
+    xaiContributors: [
+      { factor: 'Urban Hill Encroachment', weightPct: 24, icon: '🏘', description: 'Unplanned residential cutting on Narakasur & Kahilipara hills' },
+      { factor: 'Moderate Precipitation', weightPct: 18, icon: '🌧', description: '42mm rain in 6 hours' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 25, rainfall: 6 },
+      { time: '14:00', score: 32, rainfall: 15 },
+      { time: '16:00', score: 40, rainfall: 24 },
+      { time: '18:00', score: 48, rainfall: 33 },
+      { time: 'NOW', score: 54, rainfall: 42 },
+    ],
+    impact: {
+      roadsCount: 1,
+      villagesCount: 1,
+      bridgesCount: 0,
+      peopleAffected: 780,
+    },
+    recommendedActions: [
+      { id: 'act-gwt-1', action: 'Monitor Kahilipara & Kharghuli vulnerable slope dwellings', priority: 'P3' }
+    ],
+    satelliteChange: {
+      areaHectares: 0.6,
+      confidencePct: 72,
+      periodDays: 10,
+      sector: 'Kahilipara Hill',
+      beforeImgUrl: '',
+      nowImgUrl: '',
+    }
+  },
+  {
+    id: 'agartala-tripura',
+    name: 'Jampui Hills Corridor',
+    state: 'Tripura',
+    district: 'North Tripura',
+    coordinates: { lat: 23.8315, lng: 91.2868 },
+    riskScore: 35,
+    riskLevel: 'LOW',
+    confidenceScore: 90,
+    expectedRiskWindow: 'Normal / Stable',
+    rainfallMm: 18,
+    soilMoisturePct: 38,
+    slopeDeg: 42,
+    historicalActivityPct: 30,
+    terrainInstabilityPct: 28,
+    xaiContributors: [
+      { factor: 'Light Moisture', weightPct: 12, icon: '💧', description: 'Normal baseline moisture levels' },
+      { factor: 'Stable Vegetation Cover', weightPct: 10, icon: '🌲', description: 'Root cohesion preventing soil displacement' }
+    ],
+    riskEvolution: [
+      { time: '12:00', score: 20, rainfall: 2 },
+      { time: '14:00', score: 24, rainfall: 5 },
+      { time: '16:00', score: 28, rainfall: 9 },
+      { time: '18:00', score: 31, rainfall: 14 },
+      { time: 'NOW', score: 35, rainfall: 18 },
+    ],
+    impact: {
+      roadsCount: 0,
+      villagesCount: 0,
+      bridgesCount: 0,
+      peopleAffected: 0,
+    },
+    recommendedActions: [
+      { id: 'act-aga-1', action: 'Routine weather telemetry check', priority: 'P4' }
+    ],
+    satelliteChange: {
+      areaHectares: 0.1,
+      confidencePct: 95,
+      periodDays: 14,
+      sector: 'Jampui Ridge',
+      beforeImgUrl: '',
+      nowImgUrl: '',
+    }
+  }
+];

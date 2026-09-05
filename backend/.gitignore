@@ -1,0 +1,21 @@
+# Logs
+*.log
+
+# Dependencies
+node_modules/
+
+# Build Output
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Media Uploads & Temp files
+uploads/
+scratch/
+*.sqlite
+*.db
