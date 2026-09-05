@@ -1,16 +1,9 @@
-databases:
-  - name: veltrex-postgres
-    databaseName: veltrex_db
-    user: veltrex_user
-    plan: starter
-    region: singapore
-
 services:
   - type: web
     name: veltrex-backend
     env: node
     region: singapore
-    plan: starter
+    plan: free
     buildCommand: cd backend && npm install && npx prisma migrate deploy && npm run build
     startCommand: cd backend && npm run start
     healthCheckPath: /api/v1/health
@@ -24,9 +17,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL
-        fromDatabase:
-          name: veltrex-postgres
-          property: connectionString
+        sync: false
       - key: WEATHER_PROVIDER
         value: openweather
       - key: WEATHER_API_KEY
