@@ -77,6 +77,17 @@ app.use((req, res, next) => {
 // Serve uploaded media statically
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Root Welcome Endpoint
+app.get('/', (req, res) => {
+  res.json({
+    service: 'VELTREX Geospatial Landslide Intelligence API Engine',
+    status: 'ONLINE',
+    version: '1.0.0',
+    healthCheck: '/api/v1/health',
+    systemStatus: '/api/v1/system/status',
+  });
+});
+
 // API v1 Routes
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1', dashboardRoutes);
